@@ -1,0 +1,22 @@
+{
+  "name": "loyalty-segunda-compra",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Video vertical 9:16 de Ambit: «¿Y la segunda compra?» (35 s, Remotion)",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render SegundaCompra out/segunda-compra.mp4",
+    "still": "remotion still SegundaCompra"
+  },
+  "dependencies": {
+    "@fontsource/gantari": "5.3.0",
+    "@remotion/cli": "4.0.541",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.541"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "typescript": "5.6.3"
+  }
+}
