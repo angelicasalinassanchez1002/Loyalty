@@ -1,6 +1,5 @@
 import React from 'react';
 import {AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame} from 'remotion';
-import {Subtitulos} from './Subtitulos';
 import {EXPO, EXPO_IO, K, t01} from './kit';
 import {FIN, INICIOS, SOLAPE} from './tiempos';
 import {E1} from './escenas/E1';
@@ -61,7 +60,6 @@ export const SegundaCompraMotion: React.FC = () => (
         </Sequence>
       );
     })}
-    <Subtitulos />
     {/* Música y efectos UX/UI generados por scripts/sonido.py */}
     <Audio src={staticFile('v2/sonido.wav')} />
   </AbsoluteFill>

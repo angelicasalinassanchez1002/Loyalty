@@ -2,7 +2,7 @@
 
 ## Versión 2 · motion graphics (`SegundaCompra-Motion`)
 
-Estilo explicativo: el guion completo aparece palabra por palabra dentro de los dibujos (ticket, buscador, carril de clientes, celular, red de clientes y pista de compras). La cámara entra y sale de los elementos, cada escena tiene su propio fondo sutil y las transiciones se enciman (zoom, iris, barrido y subir). Incluye subtítulos, música y efectos UX/UI generados por código.
+Estilo explicativo: el guion completo aparece palabra por palabra dentro de los dibujos (ticket, buscador, carril de clientes, celular, red de clientes y pista de compras). La cámara entra y sale de los elementos, cada escena tiene su propio fondo sutil y las transiciones se enciman (zoom, iris, barrido y subir). El texto integrado es el subtítulo (sin subtítulos aparte). Incluye música y efectos UX/UI generados por código.
 
 - Paleta Ambit One únicamente: `#891DFF`, `#212135`, `#E9EAF2`, `#FFFFFF`. Tipografía Gantari. Sin logo ni nombre de marca y siempre en contexto gastronómico.
 - Código: `src/v2/` (`tiempos.ts` con el guion y los tiempos por palabra, `kit.tsx`, `escenas/E1–E5`, `Subtitulos.tsx`, `Video.tsx`).
