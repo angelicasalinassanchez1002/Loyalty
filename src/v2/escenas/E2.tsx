@@ -1,0 +1,104 @@
+import React from 'react';
+import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
+import {Abs, Camara, FONT, FondoDiagonales, Frase, I, Ico, K, keys, sombra, t01} from '../kit';
+import {P} from '../tiempos';
+
+// «Y mientras sigues buscando clientes nuevos, los que ya te compraron se van sin que sepas quiénes son.»
+const k = 1;
+
+const Anuncio: React.FC<{en: number; titulo: string; dato: string}> = ({en, titulo, dato}) => {
+  const f = useCurrentFrame();
+  const t = t01(f, en, 16);
+  return (
+    <div style={{opacity: t, transform: `translateY(${(1 - t) * 40}px)`, display: 'flex', alignItems: 'center', gap: 26, background: K.blanco, borderRadius: 26, padding: '28px 32px', boxShadow: sombra, marginBottom: 24}}>
+      <div style={{width: 84, height: 84, borderRadius: 22, background: 'rgba(137,29,255,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <Ico d={I.mega} size={46} />
+      </div>
+      <div style={{flex: 1, fontFamily: FONT}}>
+        <div style={{fontSize: 46, fontWeight: 700, color: K.tinta}}>{titulo}</div>
+        <div style={{fontSize: 34, fontWeight: 600, color: K.suave}}>{dato}</div>
+      </div>
+    </div>
+  );
+};
+
+export const E2: React.FC = () => {
+  const f = useCurrentFrame();
+  const pBusc = P(k, 'buscando');
+  const pLos = P(k, 'los que');
+  const pSeVan = P(k, 'se van');
+  const pSin = P(k, 'sin que');
+
+  // La cámara baja del buscador a la fila de clientes.
+  const camY = keys(f, [[0, 960], [pLos - 10, 960], [pLos + 14, 2260]]);
+  const caret = Math.floor(f / 8) % 2 === 0 ? 1 : 0;
+  const barra = t01(f, 0, 18);
+
+  return (
+    <AbsoluteFill>
+      <FondoDiagonales />
+      <Camara cx={540} cy={camY} s={1}>
+        {/* Parte 1: buscador */}
+        <Abs x={90} y={250}>
+          <Frase k={k} desde="Y mientras" n={3} style={{fontSize: 64, fontWeight: 700, color: K.suave}} />
+        </Abs>
+        <Abs x={90} y={360}>
+          <div style={{width: 900, transform: `scaleX(${0.4 + 0.6 * barra})`, opacity: barra, transformOrigin: 'left center', background: K.blanco, borderRadius: 999, border: `4px solid ${K.morado}`, padding: '34px 44px', display: 'flex', alignItems: 'center', gap: 26, boxShadow: '0 20px 60px rgba(137,29,255,0.18)', boxSizing: 'border-box'}}>
+            <Ico d={I.buscar} size={64} w={2.4} />
+            <Frase k={k} desde="buscando" n={3} acentos={['nuevos']} style={{fontSize: 62, fontWeight: 700, color: K.tinta, whiteSpace: 'nowrap'}} />
+            <div style={{width: 5, height: 66, background: K.morado, opacity: f > pBusc + 20 ? caret : 1}} />
+          </div>
+        </Abs>
+        <Abs x={90} y={620}>
+          <div style={{width: 900}}>
+            <Anuncio en={pBusc + 6} titulo="2x1 en tacos al pastor" dato="Anuncio · 12.4 k personas" />
+            <Anuncio en={pBusc + 12} titulo="Promo de martes" dato="Anuncio · clientes nuevos" />
+            <Anuncio en={pBusc + 18} titulo="Cupón de bienvenida" dato="Anuncio · redes sociales" />
+          </div>
+        </Abs>
+
+        {/* Parte 2: los que ya te compraron */}
+        <Abs x={90} y={1600}>
+          <Frase k={k} desde="los que" n={5} acentos={['compraron']} saltos={[3]} style={{fontSize: 96, fontWeight: 800, color: K.tinta, lineHeight: 1.02, letterSpacing: '-0.02em'}} />
+        </Abs>
+        {/* carril */}
+        <Abs x={0} y={2296}>
+          <div style={{width: 1080, height: 6, backgroundImage: `repeating-linear-gradient(90deg, ${K.tenue} 0 22px, transparent 22px 40px)`}} />
+        </Abs>
+        {/* salida a la derecha */}
+        <Abs x={560} y={2010}>
+          <div style={{display: 'flex', alignItems: 'center', gap: 14}}>
+            <Frase k={k} desde="se van" n={2} acentos={['van']} style={{fontSize: 84, fontWeight: 800, color: K.tinta}} />
+            <svg width={120} height={60} viewBox="0 0 120 60" style={{opacity: t01(f, pSeVan + 4, 10), transform: `translateX(${(1 - t01(f, pSeVan + 4, 14)) * -30}px)`}}>
+              <path d="M6 30h100M80 8l26 22-26 22" stroke={K.morado} strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </svg>
+          </div>
+        </Abs>
+        {Array.from({length: 9}).map((_, i) => {
+          const a = pLos - 6 + i * 11;
+          const x = interpolate(f, [a, a + 70], [-140, 1220], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+          if (f < a) return null;
+          const anon = f >= pSin + 2 || x > 620;
+          const tq = anon ? t01(f, Math.max(pSin + 2, a + 40), 8) : 0;
+          return (
+            <div key={i} style={{position: 'absolute', left: x - 70, top: 2160 + (i % 2) * 6}}>
+              <div style={{width: 140, height: 140, borderRadius: 70, background: anon && tq > 0.5 ? K.niebla : i % 3 === 0 ? K.morado : K.blanco, border: `4px solid ${anon && tq > 0.5 ? K.tenue : K.morado}`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: sombra, boxSizing: 'border-box'}}>
+                {anon && tq > 0.5 ? (
+                  <span style={{fontFamily: FONT, fontWeight: 800, fontSize: 76, color: K.suave, transform: `scale(${0.6 + 0.4 * tq})`}}>?</span>
+                ) : (
+                  <Ico d={I.persona} size={74} color={i % 3 === 0 ? K.blanco : K.morado} />
+                )}
+              </div>
+              <div style={{position: 'absolute', right: -8, top: -6, width: 54, height: 54, borderRadius: 27, background: K.blanco, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: sombra}}>
+                <Ico d={I.bolsa} size={30} />
+              </div>
+            </div>
+          );
+        })}
+        <Abs x={90} y={2560}>
+          <Frase k={k} desde="sin que" n={5} acentos={['quiénes', 'son']} saltos={[3]} style={{fontSize: 96, fontWeight: 800, color: K.tinta, lineHeight: 1.02, letterSpacing: '-0.02em'}} />
+        </Abs>
+      </Camara>
+    </AbsoluteFill>
+  );
+};

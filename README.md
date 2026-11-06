@@ -1,4 +1,17 @@
-# «¿Y la segunda compra?» — video vertical Ambit
+# «¿Y la segunda compra?» — video vertical
+
+## Versión 2 · motion graphics (`SegundaCompra-Motion`)
+
+Estilo explicativo: el guion completo aparece palabra por palabra dentro de los dibujos (ticket, buscador, carril de clientes, celular, red de clientes y pista de compras). La cámara entra y sale de los elementos, cada escena tiene su propio fondo sutil y las transiciones se enciman (zoom, iris, barrido y subir). Incluye subtítulos, música y efectos UX/UI generados por código.
+
+- Paleta Ambit One únicamente: `#891DFF`, `#212135`, `#E9EAF2`, `#FFFFFF`. Tipografía Gantari. Sin logo ni nombre de marca y siempre en contexto gastronómico.
+- Código: `src/v2/` (`tiempos.ts` con el guion y los tiempos por palabra, `kit.tsx`, `escenas/E1–E5`, `Subtitulos.tsx`, `Video.tsx`).
+- Sonido: `node scripts/eventos.mjs && python3 scripts/sonido.py` → `public/v2/sonido.wav`.
+- Subtítulos .srt: `node scripts/srt.mjs` → `out/segunda-compra-motion.srt`.
+- Render: `npx remotion render SegundaCompra-Motion out/segunda-compra-motion.mp4 --crf=17`. Después se normaliza a ≈ −14 LUFS con `ffmpeg -af loudnorm=I=-14:TP=-1.5`.
+- Todavía no hay voz grabada: los tiempos de cada palabra se estiman en `tiempos.ts`. Cuando llegue la grabación, se sustituye `VOZ` por la alineación real y todo se reacomoda solo.
+
+## Versión 1
 
 Video de 35 s, 1080×1920, 30 fps, hecho en código con Remotion. Motion graphics propios con la estética Ambit: fondos lisos, piezas de interfaz que entran con desenfoque, morado como único acento y tipografía Gantari.
 
