@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Anuncio All in one</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gantari:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --morado:#891DFF; --tinta:#212135; --gris:#E9EAF2; --blanco:#FFFFFF;
+    --lav:#F3EAFF; --lav2:#E4D0FF; --tinta2:#5B5B78;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#d9d9e3}
+  body{font-family:'Gantari',system-ui,sans-serif;color:var(--tinta);-webkit-font-smoothing:antialiased}
+  .lienzo{position:relative;width:1080px;height:1350px;overflow:hidden;background:var(--blanco)}
+
+  /* fondo */
+  .banda{position:absolute;left:0;right:0;top:890px;bottom:0;background:var(--gris)}
+  .arco{position:absolute;right:-360px;top:250px;width:980px;height:980px;border-radius:50%;
+        background:radial-gradient(circle at 50% 50%, var(--lav) 0 54%, transparent 54.2%),
+                   var(--morado);}
+  .arco::after{content:"";position:absolute;inset:150px;border-radius:50%;background:var(--lav)}
+  .punto{position:absolute;border-radius:50%;background:var(--morado)}
+
+  /* encabezado */
+  .cab{position:absolute;left:72px;top:72px;width:860px}
+  .etiqueta{display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:999px;
+            background:var(--lav);color:var(--morado);font-weight:700;font-size:20px;letter-spacing:.14em}
+  .etiqueta i{width:8px;height:8px;border-radius:50%;background:var(--morado)}
+  h1{margin-top:28px;font-size:84px;line-height:.98;font-weight:800;letter-spacing:-.035em}
+  h1 em{font-style:normal;color:var(--morado)}
+  .bajada{margin-top:22px;font-size:28px;line-height:1.3;color:var(--tinta2);font-weight:500;max-width:560px}
+
+  /* precio */
+  .precio{position:absolute;left:72px;top:470px;width:450px;padding:34px 36px 32px;border-radius:32px;
+          background:var(--tinta);color:var(--blanco);box-shadow:0 30px 60px -24px rgba(33,33,53,.45)}
+  .precio .plan{display:flex;align-items:center;justify-content:space-between}
+  .precio .plan b{font-size:26px;font-weight:700}
+  .precio .plan span{font-size:16px;font-weight:700;letter-spacing:.12em;padding:7px 12px;border-radius:999px;background:var(--morado)}
+  .cifra{display:flex;align-items:flex-start;margin-top:14px;line-height:1}
+  .cifra .sig{font-size:56px;font-weight:800;margin-top:14px;margin-right:4px}
+  .cifra .num{font-size:112px;font-weight:900;letter-spacing:-.05em}
+  .cifra .mes{align-self:flex-end;font-size:28px;font-weight:600;color:#B9B9CF;margin:0 0 16px 10px}
+  .precio hr{border:0;height:1px;background:rgba(255,255,255,.14);margin:22px 0 18px}
+  .precio p{font-size:22px;line-height:1.35;color:#D6D6E4}
+  .precio p b{color:var(--blanco)}
+
+  /* terminal */
+  .terminal{position:absolute;left:470px;top:440px;width:580px}
+  .pantalla{position:relative;height:380px;border-radius:26px;background:#15151F;padding:14px;
+            box-shadow:0 40px 70px -30px rgba(33,33,53,.55);transform:perspective(1600px) rotateY(-8deg)}
+  .ui{display:flex;height:100%;border-radius:14px;overflow:hidden;background:#F7F7FB}
+  .lat{width:46px;background:var(--blanco);border-right:1px solid #ECECF3;display:flex;flex-direction:column;align-items:center;gap:16px;padding-top:16px}
+  .lat i{width:16px;height:16px;border-radius:5px;background:#E2E2EC}
+  .lat i.on{background:var(--morado)}
+  .centro{flex:1;padding:14px}
+  .buscar{height:28px;border-radius:8px;background:var(--blanco);border:1px solid #ECECF3;font-size:11px;color:#9A9AB2;display:flex;align-items:center;padding:0 10px}
+  .cats{display:flex;gap:6px;margin:10px 0}
+  .cats span{font-size:10px;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--blanco);color:var(--tinta2);border:1px solid #ECECF3}
+  .cats span.on{background:var(--morado);color:var(--blanco);border-color:var(--morado)}
+  .platos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .plato{background:var(--blanco);border-radius:10px;padding:8px;border:1px solid #EFEFF5}
+  .foto{height:62px;border-radius:7px;background:var(--lav);position:relative;overflow:hidden}
+  .foto::before{content:"";position:absolute;left:50%;top:50%;width:46px;height:46px;transform:translate(-50%,-50%);border-radius:50%;background:var(--blanco);box-shadow:0 2px 6px rgba(33,33,53,.12)}
+  .foto b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%}
+  .plato p{font-size:10px;font-weight:700;margin-top:6px;display:flex;flex-direction:column;gap:2px}
+  .plato p span{color:var(--morado)}
+  .orden{width:150px;background:var(--blanco);border-left:1px solid #ECECF3;padding:14px 12px;display:flex;flex-direction:column}
+  .orden h4{font-size:13px;font-weight:800}
+  .linea{display:flex;justify-content:space-between;font-size:10px;font-weight:600;color:var(--tinta2);padding:7px 0;border-bottom:1px dashed #E6E6EF}
+  .linea:first-of-type{margin-top:8px}
+  .total{margin-top:auto;display:flex;justify-content:space-between;font-size:13px;font-weight:800;padding-bottom:10px}
+  .cobrar{height:34px;border-radius:9px;background:var(--morado);color:var(--blanco);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .cuello{width:120px;height:56px;margin:-4px auto 0;background:linear-gradient(#2A2A3C,#1B1B28);clip-path:polygon(18% 0,82% 0,100% 100%,0 100%)}
+  .base{width:300px;height:26px;margin:0 auto;border-radius:10px 10px 14px 14px;background:#1B1B28;box-shadow:0 22px 30px -14px rgba(33,33,53,.5)}
+
+  /* chip flotante */
+  .chip{position:absolute;display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:16px;background:var(--blanco);
+        box-shadow:0 18px 36px -16px rgba(33,33,53,.35);font-size:18px;font-weight:700}
+  .chip .ic{width:34px;height:34px;border-radius:10px;background:var(--lav);display:flex;align-items:center;justify-content:center}
+  .chip small{display:block;font-size:13px;font-weight:600;color:var(--tinta2)}
+
+  /* funciones */
+  .funciones{position:absolute;left:72px;right:72px;top:940px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .grupo{background:var(--blanco);box-shadow:0 14px 30px -20px rgba(33,33,53,.35);border-radius:26px;padding:24px 22px 18px}
+  .grupo h3{font-size:16px;font-weight:800;letter-spacing:.16em;color:var(--morado);margin-bottom:10px}
+  .f{display:flex;align-items:center;gap:12px;padding:9px 0;font-size:21px;font-weight:600;line-height:1.1}
+  .f .ic{flex:none;width:40px;height:40px;border-radius:12px;background:var(--lav);display:flex;align-items:center;justify-content:center}
+  svg{width:22px;height:22px;fill:none;stroke:var(--morado);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+  .pie{position:absolute;left:72px;right:72px;bottom:44px;display:flex;align-items:center;justify-content:space-between;font-size:20px;font-weight:600;color:var(--tinta2)}
+  .pie b{color:var(--tinta)}
+  .pie .diez{display:flex;align-items:center;gap:10px}
+  .pie .diez i{display:inline-flex;width:28px;height:28px;border-radius:50%;background:var(--morado);color:#fff;font-style:normal;font-size:15px;font-weight:800;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+<div class="lienzo">
+  <div class="arco"></div>
+  <div class="banda"></div>
+  <div class="punto" style="width:18px;height:18px;left:968px;top:186px"></div>
+  <div class="punto" style="width:10px;height:10px;left:1002px;top:226px;opacity:.4"></div>
+
+  <header class="cab">
+    <span class="etiqueta"><i></i>PARA RESTAURANTES</span>
+    <h1>Todo tu restaurante,<br><em>en un solo lugar.</em></h1>
+    <p class="bajada">Vende, cocina, factura y entrega desde un mismo sistema.</p>
+  </header>
+
+  <!-- Terminal -->
+  <div class="terminal">
+    <div class="pantalla">
+      <div class="ui">
+        <div class="lat"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+        <div class="centro">
+          <div class="buscar">Buscar platillo…</div>
+          <div class="cats"><span class="on">Platillos</span><span>Bebidas</span><span>Combos</span><span>Postres</span></div>
+          <div class="platos">
+            <div class="plato"><div class="foto"><b style="background:#C98A4B"></b></div><p>Hamburguesa<span>$120</span></p></div>
+            <div class="plato"><div class="foto"><b style="background:#E2B33C"></b></div><p>Tacos<span>$90</span></p></div>
+            <div class="plato"><div class="foto"><b style="background:#6FAE5A"></b></div><p>Ensalada<span>$80</span></p></div>
+            <div class="plato"><div class="foto"><b style="background:#D4573B"></b></div><p>Pizza<span>$150</span></p></div>
+            <div class="plato"><div class="foto"><b style="background:#E9C46A"></b></div><p>Pasta<span>$130</span></p></div>
+            <div class="plato"><div class="foto"><b style="background:#8C5A3C"></b></div><p>Café<span>$45</span></p></div>
+          </div>
+        </div>
+        <div class="orden">
+          <h4>Tu orden</h4>
+          <div class="linea"><span>1 Hamburguesa</span><span>$120</span></div>
+          <div class="linea"><span>1 Tacos</span><span>$90</span></div>
+          <div class="linea"><span>1 Ensalada</span><span>$80</span></div>
+          <div class="total"><span>Total</span><span>$290</span></div>
+          <div class="cobrar">Cobrar</div>
+        </div>
+      </div>
+    </div>
+    <div class="cuello"></div>
+    <div class="base"></div>
+  </div>
+
+  <div class="chip" style="left:842px;top:392px">
+    <span class="ic"><svg viewBox="0 0 24 24"><path d="M6 13.9A4 4 0 0 1 7.5 6.2a5 5 0 0 1 9 0A4 4 0 0 1 18 13.9V20H6z"/><path d="M6 17h12"/></svg></span>
+    <span>Orden en cocina<small>Mesa 4 · hace 1 min</small></span>
+  </div>
+
+  <!-- Precio -->
+  <div class="precio">
+    <div class="plan"><b>All in one</b><span>TODO INCLUIDO</span></div>
+    <div class="cifra"><span class="sig">$</span><span class="num">1,590</span><span class="mes">/mes</span></div>
+    <hr>
+    <p><b>10 herramientas</b> en un solo pago mensual.</p>
+  </div>
+
+  <!-- Funciones -->
+  <section class="funciones">
+    <div class="grupo">
+      <h3>VENDE</h3>
+      <div class="f"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>Punto de venta</div>
+      <div class="f"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span>Terminal de pagos</div>
+      <div class="f"><span class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M10 12V8.5a1.5 1.5 0 0 1 3 0V13l2 .4a1.5 1.5 0 0 1 1.2 1.7L15.8 18H11l-2.4-3"/></svg></span>Kiosko</div>
+      <div class="f"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.4a1.5 1.5 0 0 0 1.5 1.1h8.6a1.5 1.5 0 0 0 1.5-1.2L21 8H6"/></svg></span>E-commerce</div>
+    </div>
+    <div class="grupo">
+      <h3>OPERA</h3>
+      <div class="f"><span class="ic"><svg viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span>Inventario</div>
+      <div class="f"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 13.9A4 4 0 0 1 7.5 6.2a5 5 0 0 1 9 0A4 4 0 0 1 18 13.9V20H6z"/><path d="M6 17h12"/></svg></span>Monitor de cocina</div>
+      <div class="f"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 18h18M4 18a8 8 0 0 1 16 0M12 7V5M10 5h4"/></svg></span>Menú digital</div>
+    </div>
+    <div class="grupo">
+      <h3>CONECTA</h3>
+      <div class="f"><span class="ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg></span>Facturación electrónica</div>
+      <div class="f"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17h6l3-7h3M15 10l-2-4h-2M9 10h4"/></svg></span>Flotilla propia</div>
+      <div class="f"><span class="ic"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></span>Integraciones</div>
+    </div>
+  </section>
+
+  <footer class="pie">
+    <span class="diez"><i>10</i><span><b>Un sistema</b> para todo tu restaurante</span></span>
+    <span>Sin contratar herramientas por separado</span>
+  </footer>
+</div>
+</body>
+</html>
