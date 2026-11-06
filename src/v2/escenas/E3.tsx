@@ -28,7 +28,7 @@ export const E3: React.FC = () => {
           const c = t01(f, a, 22, EXPO);
           const rot = (random(`r${i}`) - 0.5) * 14;
           const dx = (random(`x${i}`) - 0.5) * 120;
-          const y = interpolate(c, [0, 1], [-300, 1180 - i * 70]);
+          const y = interpolate(c, [0, 1], [420, 1180 - i * 70]);
           return (
             <div key={t} style={{position: 'absolute', left: 540 - 300 + dx, top: y, width: 600, transform: `perspective(1600px) rotate(${rot * c + (1 - c) * 30}deg) rotateX(${(1 - c) * 70}deg) rotateY(${(1 - c) * (i % 2 ? 40 : -40)}deg)`, opacity: Math.min(1, c * 3), filter: `blur(${(1 - c) * 14 + (i < TICKETS.length - 3 ? 1.5 : 0)}px) brightness(${0.7 + 0.3 * (i / TICKETS.length)})`}}>
               <div style={{background: K.blanco, borderRadius: 22, padding: '26px 32px', display: 'flex', alignItems: 'center', gap: 22, boxShadow: sombraFuerte, fontFamily: FONT}}>
