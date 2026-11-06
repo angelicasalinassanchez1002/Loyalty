@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, random, useCurrentFrame} from 'remotion';
-import {Abs, EXPO, FONT, FondoCuadricula, Frase, I, Ico, K, keys, sombraFuerte, t01} from '../kit';
+import {Abs, Bokeh, EXPO, FONT, FondoCuadricula, Frase, I, Ico, K, Reflejo, keys, sombraFuerte, t01} from '../kit';
 import {P} from '../tiempos';
 
 // «Ya conocen tu negocio, ya confiaron en ti. Pero si mañana quisieras invitarlos a regresar… ¿a quién le escribirías?»
@@ -18,6 +18,7 @@ export const E3: React.FC = () => {
   return (
     <AbsoluteFill>
       <FondoCuadricula />
+      <Bokeh semilla="e3" n={4} opacidad={0.1} />
       <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: 900, background: 'radial-gradient(ellipse 70% 60% at 50% 100%, rgba(137,29,255,0.35), rgba(137,29,255,0))'}} />
 
       {/* Título 1 */}
@@ -34,7 +35,7 @@ export const E3: React.FC = () => {
           const dx = (random(`x${i}`) - 0.5) * 120;
           const y = interpolate(c, [0, 1], [-300, 1180 - i * 70]);
           return (
-            <div key={t} style={{position: 'absolute', left: 540 - 300 + dx, top: y, width: 600, transform: `rotate(${rot * c + (1 - c) * 30}deg)`, opacity: Math.min(1, c * 3)}}>
+            <div key={t} style={{position: 'absolute', left: 540 - 300 + dx, top: y, width: 600, transform: `perspective(1600px) rotate(${rot * c + (1 - c) * 30}deg) rotateX(${(1 - c) * 70}deg) rotateY(${(1 - c) * (i % 2 ? 40 : -40)}deg)`, opacity: Math.min(1, c * 3), filter: `blur(${(1 - c) * 14 + (i < TICKETS.length - 3 ? 1.5 : 0)}px) brightness(${0.7 + 0.3 * (i / TICKETS.length)})`}}>
               <div style={{background: K.blanco, borderRadius: 22, padding: '26px 32px', display: 'flex', alignItems: 'center', gap: 22, boxShadow: sombraFuerte, fontFamily: FONT}}>
                 <div style={{width: 74, height: 74, borderRadius: 20, background: 'rgba(137,29,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                   <Ico d={I.ticket} size={42} />
@@ -56,10 +57,12 @@ export const E3: React.FC = () => {
       </Abs>
 
       {/* Celular: nuevo mensaje sin destinatarios */}
-      <div style={{position: 'absolute', left: 120, top: 520, transform: `translateY(${tel}px)`}}>
-        <div style={{width: 840, height: 1560, borderRadius: 90, background: '#16162A', padding: 20, boxSizing: 'border-box', boxShadow: sombraFuerte}}>
+      <div style={{position: 'absolute', left: 140, top: 600, width: 800, height: 900, borderRadius: '50%', background: K.morado, opacity: 0.35 * t01(f, pPero + 10, 30), filter: 'blur(120px)'}} />
+      <div style={{position: 'absolute', left: 120, top: 520, transform: `perspective(2200px) translateY(${tel}px) rotateX(${(tel / 1500) * 38}deg) rotateZ(${(tel / 1500) * -6}deg)`, transformOrigin: '50% 0%'}}>
+        <div style={{width: 840, height: 1560, borderRadius: 90, background: K.tinta, padding: 20, boxSizing: 'border-box', boxShadow: sombraFuerte}}>
           <div style={{width: '100%', height: '100%', borderRadius: 72, background: K.blanco, overflow: 'hidden', fontFamily: FONT, position: 'relative', padding: '110px 50px 0', boxSizing: 'border-box'}}>
-            <div style={{position: 'absolute', top: 30, left: '50%', width: 200, height: 46, marginLeft: -100, borderRadius: 23, background: '#16162A'}} />
+            <div style={{position: 'absolute', top: 30, left: '50%', width: 200, height: 46, marginLeft: -100, borderRadius: 23, background: K.tinta}} />
+            <Reflejo en={pPero + 14} dur={34} fuerza={0.7} />
             <div style={{fontSize: 52, fontWeight: 800, color: K.tinta}}>Nuevo mensaje</div>
             <div style={{marginTop: 30, borderRadius: 26, background: K.niebla, padding: '26px 30px', minHeight: 150}}>
               <div style={{fontSize: 34, fontWeight: 700, color: K.suave, marginBottom: 6}}>Para:</div>

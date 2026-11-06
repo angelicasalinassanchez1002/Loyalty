@@ -1,16 +1,16 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
-import {Abs, Camara, FONT, FondoDiagonales, Frase, I, Ico, K, keys, sombra, t01} from '../kit';
+import {Abs, Bokeh, Camara, Entra3D, FONT, FondoDiagonales, Frase, I, Ico, K, Reflejo, keys, sombra, t01} from '../kit';
 import {P} from '../tiempos';
 
 // «Y mientras sigues buscando clientes nuevos, los que ya te compraron se van sin que sepas quiénes son.»
 const k = 1;
 
 const Anuncio: React.FC<{en: number; titulo: string; dato: string}> = ({en, titulo, dato}) => {
-  const f = useCurrentFrame();
-  const t = t01(f, en, 16);
   return (
-    <div style={{opacity: t, transform: `translateY(${(1 - t) * 40}px)`, display: 'flex', alignItems: 'center', gap: 26, background: K.blanco, borderRadius: 26, padding: '28px 32px', boxShadow: sombra, marginBottom: 24}}>
+    <Entra3D en={en} rx={35} dy={60} dur={22}>
+    <div style={{display: 'flex', alignItems: 'center', gap: 26, background: K.blanco, borderRadius: 26, padding: '28px 32px', boxShadow: sombra, marginBottom: 24, position: 'relative', overflow: 'hidden', border: '1px solid rgba(33,33,53,0.05)'}}>
+      <Reflejo en={en + 10} />
       <div style={{width: 84, height: 84, borderRadius: 22, background: 'rgba(137,29,255,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
         <Ico d={I.mega} size={46} />
       </div>
@@ -19,6 +19,7 @@ const Anuncio: React.FC<{en: number; titulo: string; dato: string}> = ({en, titu
         <div style={{fontSize: 34, fontWeight: 600, color: K.suave}}>{dato}</div>
       </div>
     </div>
+    </Entra3D>
   );
 };
 
@@ -37,16 +38,20 @@ export const E2: React.FC = () => {
   return (
     <AbsoluteFill>
       <FondoDiagonales />
+      <Bokeh semilla="e2" n={4} opacidad={0.05} />
       <Camara cx={540} cy={camY} s={1}>
         {/* Parte 1: buscador */}
         <Abs x={90} y={250}>
           <Frase k={k} desde="Y mientras" n={3} style={{fontSize: 64, fontWeight: 700, color: K.suave}} />
         </Abs>
         <Abs x={90} y={360}>
-          <div style={{width: 900, transform: `scaleX(${0.4 + 0.6 * barra})`, opacity: barra, transformOrigin: 'left center', background: K.blanco, borderRadius: 999, border: `4px solid ${K.morado}`, padding: '34px 44px', display: 'flex', alignItems: 'center', gap: 26, boxShadow: '0 20px 60px rgba(137,29,255,0.18)', boxSizing: 'border-box'}}>
+          <div style={{position: 'absolute', inset: -30, borderRadius: 999, background: K.morado, opacity: 0.18 * barra, filter: 'blur(40px)'}} />
+          <div style={{width: 900, transform: `scaleX(${0.4 + 0.6 * barra})`, opacity: barra, transformOrigin: 'left center', borderRadius: 999, padding: 5, background: `conic-gradient(from ${f * 6}deg, ${K.morado}, rgba(137,29,255,0.15), ${K.morado}, rgba(137,29,255,0.15), ${K.morado})`, boxShadow: '0 20px 60px rgba(137,29,255,0.18)', boxSizing: 'border-box'}}>
+          <div style={{background: K.blanco, borderRadius: 999, padding: '30px 40px', display: 'flex', alignItems: 'center', gap: 26}}>
             <Ico d={I.buscar} size={64} w={2.4} />
             <Frase k={k} desde="buscando" n={3} acentos={['nuevos']} style={{fontSize: 62, fontWeight: 700, color: K.tinta, whiteSpace: 'nowrap'}} />
             <div style={{width: 5, height: 66, background: K.morado, opacity: f > pBusc + 20 ? caret : 1}} />
+          </div>
           </div>
         </Abs>
         <Abs x={90} y={620}>
@@ -80,8 +85,11 @@ export const E2: React.FC = () => {
           if (f < a) return null;
           const anon = f >= pSin + 2 || x > 620;
           const tq = anon ? t01(f, Math.max(pSin + 2, a + 40), 8) : 0;
+          const prof = i % 3 === 1 ? 0.82 : 1;
+          const v = Math.abs(x - interpolate(f - 1, [a, a + 70], [-140, 1220], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}));
           return (
-            <div key={i} style={{position: 'absolute', left: x - 70, top: 2160 + (i % 2) * 6}}>
+            <div key={i} style={{position: 'absolute', left: x - 70, top: 2160 + (i % 2) * 6, transform: `scale(${prof})`, filter: prof < 1 ? 'blur(2px)' : undefined, zIndex: prof < 1 ? 0 : 1}}>
+              <div style={{position: 'absolute', right: 70, top: 40, height: 60, width: v * 6, borderRadius: 30, background: `linear-gradient(90deg, rgba(137,29,255,0), rgba(137,29,255,0.22))`, filter: 'blur(8px)'}} />
               <div style={{width: 140, height: 140, borderRadius: 70, background: anon && tq > 0.5 ? K.niebla : i % 3 === 0 ? K.morado : K.blanco, border: `4px solid ${anon && tq > 0.5 ? K.tenue : K.morado}`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: sombra, boxSizing: 'border-box'}}>
                 {anon && tq > 0.5 ? (
                   <span style={{fontFamily: FONT, fontWeight: 800, fontSize: 76, color: K.suave, transform: `scale(${0.6 + 0.4 * tq})`}}>?</span>

@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
-import {Abs, EXPO, FONT, Frase, I, Ico, K, keys, t01} from '../kit';
+import {Abs, Bokeh, EXPO, FONT, Frase, K, Reflejo, keys, t01} from '../kit';
 import {P} from '../tiempos';
 
 // «Porque la primera compra ya la conseguiste. La pregunta es: ¿cómo haces para que haya una segunda?»
@@ -17,7 +17,7 @@ const Letras: React.FC<{texto: string; en: number; color: string; size: number}>
         const t = t01(f, en + i * 2, 16, EXPO);
         return (
           <span key={i} style={{display: 'inline-block', overflow: 'hidden', verticalAlign: 'bottom', padding: '0.05em 0 0.1em', margin: '-0.05em 0 -0.1em'}}>
-            <span style={{display: 'inline-block', transform: `translateY(${(1 - t) * 110}%)`, whiteSpace: 'pre'}}>{ch}</span>
+            <span style={{display: 'inline-block', transform: `translateY(${(1 - t) * 110}%) rotate(${(1 - t) * 8}deg)`, transformOrigin: '0 100%', filter: `blur(${(1 - t) * 10}px)`, whiteSpace: 'pre'}}>{ch}</span>
           </span>
         );
       })}
@@ -53,7 +53,7 @@ export const E5: React.FC = () => {
         <svg width={1080} height={1920} style={{position: 'absolute', inset: 0, opacity: textos}}>
           <line x1={N1.x} y1={N1.y} x2={N1.x + (N2.x - N1.x) * linea} y2={N2.y} stroke={K.morado} strokeWidth={8} strokeLinecap="round" strokeDasharray="2 26" />
         </svg>
-        <div style={{position: 'absolute', left: N1.x - 95, top: N1.y - 95, width: 190, height: 190, borderRadius: 95, background: K.morado, transform: `scale(${nodo1})`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 0 20px rgba(137,29,255,0.12)', opacity: textos}}>
+        <div style={{position: 'absolute', left: N1.x - 95, top: N1.y - 95, width: 190, height: 190, borderRadius: 95, background: K.morado, transform: `scale(${nodo1})`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 0 ${20 + 10 * check}px rgba(137,29,255,0.12), 0 20px 60px rgba(137,29,255,${0.35 * check})`, opacity: textos}}>
           <svg width={110} height={110} viewBox="0 0 24 24" fill="none" stroke={K.blanco} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round">
             <path d="M5 12.5l4.5 4.5L19 7.5" pathLength={1} strokeDasharray={`${check} 1`} />
           </svg>
@@ -70,11 +70,16 @@ export const E5: React.FC = () => {
       </div>
 
       {/* Cierre */}
-      <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 6}}>
+      <div style={{position: 'absolute', left: 140, top: 760, width: 800, height: 520, borderRadius: '50%', background: K.morado, opacity: 0.16 * t01(f, titulo + 10, 40), filter: 'blur(110px)'}} />
+      {f > titulo && <Bokeh semilla="e5" n={8} opacidad={0.12 * t01(f, titulo, 30)} />}
+      <AbsoluteFill style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 6, transform: `scale(${1 + 0.03 * t01(f, titulo, 80, (x) => x)})`}}>
         <Letras texto="¿Y LA" en={titulo} color={K.tinta} size={170} />
         <Letras texto="SEGUNDA" en={titulo + 8} color={K.morado} size={170} />
         <Letras texto="COMPRA?" en={titulo + 20} color={K.morado} size={170} />
       </AbsoluteFill>
+      <div style={{position: 'absolute', left: 0, right: 0, top: 640, height: 640, WebkitMaskImage: 'linear-gradient(#000,#000)', overflow: 'hidden', mixBlendMode: 'screen'}}>
+        <Reflejo en={titulo + 40} dur={30} fuerza={0.8} />
+      </div>
     </AbsoluteFill>
   );
 };

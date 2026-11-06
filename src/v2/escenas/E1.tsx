@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
-import {Abs, Camara, FONT, FondoPuntos, Frase, I, Ico, K, keys, sombra, t01} from '../kit';
+import {Abs, Bokeh, Camara, FONT, FondoPuntos, Frase, I, Ico, K, Reflejo, keys, sombra, t01} from '../kit';
 import {P} from '../tiempos';
 
 // «Le encantó tu negocio. Te compró. Y nunca volvió.»
@@ -30,17 +30,23 @@ export const E1: React.FC = () => {
   return (
     <AbsoluteFill>
       <FondoPuntos />
+      <Bokeh semilla="e1" n={4} opacidad={0.05} />
       <Camara cx={cx} cy={cy} s={s}>
         {/* Fachada del café */}
         <div style={{opacity: fachada}}>
           <Abs x={140} y={560}>
             <div style={{width: 800, height: 680, borderRadius: 36, background: K.blanco, boxShadow: sombra, overflow: 'hidden', position: 'relative'}}>
-              <div style={{display: 'flex', height: 110}}>
+              <div style={{display: 'flex', height: 110, position: 'relative', zIndex: 2}}>
                 {Array.from({length: 8}).map((_, i) => (
-                  <div key={i} style={{flex: 1, background: i % 2 ? K.blanco : K.morado}} />
+                  <div key={i} style={{flex: 1, position: 'relative', background: i % 2 ? K.blanco : K.morado, transformOrigin: 'top', transform: `scaleY(${t01(f, pY - 4 + i, 16)})`}}>
+                    <div style={{position: 'absolute', left: 0, right: 0, bottom: -25, height: 50, borderRadius: '0 0 50px 50px', background: i % 2 ? K.blanco : K.morado}} />
+                  </div>
                 ))}
               </div>
-              <div style={{position: 'absolute', left: 40, top: 150, width: 520, height: 490, borderRadius: 22, background: K.niebla}} />
+              <div style={{position: 'absolute', left: 40, top: 160, width: 520, height: 480, borderRadius: 22, background: `linear-gradient(160deg, ${K.niebla}, #DCDDEA)`, overflow: 'hidden'}}>
+                <div style={{position: 'absolute', left: -100, top: -40, width: 160, height: 700, transform: 'rotate(24deg)', background: 'rgba(255,255,255,0.55)'}} />
+                <div style={{position: 'absolute', left: 90, top: -40, width: 50, height: 700, transform: 'rotate(24deg)', background: 'rgba(255,255,255,0.4)'}} />
+              </div>
               {/* puerta */}
               <div style={{position: 'absolute', left: 590, top: 340, width: 170, height: 340, borderRadius: '18px 18px 0 0', background: K.niebla}} />
               <div
@@ -67,10 +73,11 @@ export const E1: React.FC = () => {
 
         {/* Ticket (vive dentro de la ventana del café) */}
         <Abs x={260} y={720}>
-          <div style={{width: 360, position: 'relative'}}>
+          <div style={{width: 360, position: 'relative', transform: `perspective(1400px) rotateY(${(1 - fachada) * -8}deg) rotateX(${(1 - fachada) * 6}deg)`}}>
             <div style={{position: 'absolute', left: -20, top: -14, width: 400, height: 24, borderRadius: 12, background: K.tinta}} />
             <div style={{height: 470 * impreso, overflow: 'hidden', position: 'relative', top: 4}}>
-              <div style={{width: 360, height: 470, background: K.blanco, boxShadow: sombra, padding: '30px 30px', boxSizing: 'border-box', fontFamily: FONT, color: K.tinta}}>
+              <div style={{width: 360, height: 470, background: K.blanco, boxShadow: sombra, padding: '30px 30px', boxSizing: 'border-box', fontFamily: FONT, color: K.tinta, position: 'relative', overflow: 'hidden', WebkitMaskImage: 'linear-gradient(#000,#000), conic-gradient(from -45deg at 50% 100%, transparent 90deg, #000 0)', WebkitMaskSize: '100% calc(100% - 10px), 20px 10px', WebkitMaskPosition: 'top, bottom', WebkitMaskRepeat: 'no-repeat, repeat-x'}}>
+                <Reflejo en={pTe + 6} dur={30} fuerza={0.9} />
                 <div style={{fontSize: 17, fontWeight: 700, letterSpacing: '0.12em', color: K.suave}}>CAFÉ · MESA 4 · 13:42</div>
                 <Frase k={k} desde="Le encantó" n={4} acentos={['encantó']} saltos={[2]} style={{fontSize: 40, fontWeight: 700, lineHeight: 1.05, marginTop: 14}} />
                 <div style={{borderTop: `2px dashed ${K.tenue}`, margin: '18px 0 14px'}} />
@@ -103,7 +110,14 @@ export const E1: React.FC = () => {
               <path d={RUTA} stroke="#fff" strokeWidth={30} fill="none" pathLength={1} strokeDasharray={`${ruta} 1`} />
             </mask>
           </defs>
-          <path d={RUTA} stroke={K.morado} strokeWidth={12} strokeLinecap="round" fill="none" strokeDasharray="0.1 30" mask="url(#m1)" />
+          <path d={RUTA} stroke={K.morado} strokeWidth={12} strokeLinecap="round" fill="none" strokeDasharray="0.1 30" mask="url(#m1)" opacity={0.55} />
+          <filter id="glow1"><feGaussianBlur stdDeviation="10" /></filter>
+          {sale > 0 && sale < 1 && (
+            <>
+              <path d={RUTA} stroke={K.morado} strokeWidth={34} strokeLinecap="round" fill="none" pathLength={1} strokeDasharray="0.16 2" strokeDashoffset={-(sale - 0.16)} opacity={0.35} filter="url(#glow1)" />
+              <path d={RUTA} stroke={K.morado} strokeWidth={8} strokeLinecap="round" fill="none" pathLength={1} strokeDasharray="0.12 2" strokeDashoffset={-(sale - 0.12)} opacity={0.8} />
+            </>
+          )}
         </svg>
         {/* El cliente sale y se va */}
         {f >= pY - 2 && (
@@ -120,6 +134,7 @@ export const E1: React.FC = () => {
               offsetDistance: `${sale * 100}%`,
               offsetRotate: '0deg',
               opacity: t01(f, pY - 2, 8),
+              filter: `blur(${Math.min(8, Math.abs(t01(f, pNunca, 34) - t01(f - 1, pNunca, 34)) * 220)}px)`,
             }}
           >
             <div style={{width: 110, height: 110, borderRadius: 55, background: K.morado, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 14px 34px rgba(137,29,255,0.35)'}}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, random, useCurrentFrame} from 'remotion';
-import {Abs, FondoAnillos, Frase, I, Ico, K, keys, sombra, t01} from '../kit';
+import {Abs, Bokeh, FondoAnillos, Frase, I, Ico, K, keys, sombra, t01} from '../kit';
 import {P} from '../tiempos';
 
 // «Tal vez no necesitas empezar por atraer más clientes. Necesitas dejar de perder el contacto con los que ya tienes.»
@@ -23,6 +23,7 @@ export const E4: React.FC = () => {
   return (
     <AbsoluteFill>
       <FondoAnillos />
+      <Bokeh semilla="e4" n={4} opacidad={0.05} />
       <div style={{position: 'absolute', inset: 0, transform: `scale(${cam})`, transformOrigin: `${CX}px ${CY}px`}}>
         {/* Clientes nuevos que llegan desde fuera (se detienen al tacharse) */}
         {Array.from({length: 22}).map((_, i) => {
@@ -39,6 +40,12 @@ export const E4: React.FC = () => {
 
         {/* Red de clientes actuales */}
         <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+          <defs>
+            <radialGradient id="lg" cx={CX} cy={CY} r={R} gradientUnits="userSpaceOnUse">
+              <stop offset="0" stopColor={K.morado} stopOpacity={1} />
+              <stop offset="1" stopColor={K.morado} stopOpacity={0.35} />
+            </radialGradient>
+          </defs>
           {Array.from({length: N}).map((_, i) => {
             const ang = ((i / N) * 360 - 90) * (Math.PI / 180);
             const nace = t01(f, pNec + 4 + i * 2, 16);
@@ -55,7 +62,7 @@ export const E4: React.FC = () => {
             const [x2, y2] = P1(a2);
             const [x3, y3] = P1(1);
             return (
-              <g key={i} stroke={K.morado} strokeWidth={6} strokeLinecap="round">
+              <g key={i} stroke="url(#lg)" strokeWidth={6} strokeLinecap="round">
                 <line x1={x0} y1={y0} x2={x1} y2={y1} />
                 {corte < 0.98 && <line x1={x2} y1={y2} x2={x3} y2={y3} />}
               </g>
@@ -80,6 +87,28 @@ export const E4: React.FC = () => {
               </div>
             </div>
           );
+        })}
+        {/* Ondas que salen del negocio */}
+        {Array.from({length: 4}).map((_, j) => {
+          const per = 54;
+          const ph = ((f + j * (per / 4)) % per) / per;
+          return (
+            <div key={`o${j}`} style={{position: 'absolute', left: CX - 140, top: CY - 140, width: 280, height: 280, borderRadius: '50%', border: `3px solid ${K.morado}`, transform: `scale(${1 + ph * 2.6})`, opacity: (1 - ph) * 0.35 * (1 - t01(f, pPerder, 20)) + (1 - ph) * 0.35 * t01(f, pCon + 6, 20)}} />
+          );
+        })}
+        {/* Chispas donde se rompe cada conexión */}
+        {Array.from({length: N}).map((_, i) => {
+          const a = pPerder + 2 + i * 3;
+          const ang = ((i / N) * 360 - 90) * (Math.PI / 180);
+          const mx = CX + Math.cos(ang) * R * 0.5;
+          const my = CY + Math.sin(ang) * R * 0.5;
+          const t = t01(f, a, 18);
+          if (f < a || t >= 1) return null;
+          return Array.from({length: 6}).map((__, q) => {
+            const qa = ang + Math.PI / 2 + (q / 6) * Math.PI * 2 + random(`q${i}${q}`);
+            const d = 10 + t * (40 + random(`d${i}${q}`) * 50);
+            return <div key={`c${i}${q}`} style={{position: 'absolute', left: mx + Math.cos(qa) * d - 4, top: my + Math.sin(qa) * d - 4, width: 8, height: 8, borderRadius: 4, background: K.morado, opacity: 1 - t, transform: `scale(${1 - t * 0.6})`}} />;
+          });
         })}
         {/* El negocio al centro */}
         <div style={{position: 'absolute', left: CX - 140, top: CY - 140, width: 280, height: 280, borderRadius: 140, background: K.morado, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 0 22px rgba(137,29,255,0.12), 0 30px 70px rgba(137,29,255,0.35)', transform: `scale(${t01(f, 0, 18)})`}}>

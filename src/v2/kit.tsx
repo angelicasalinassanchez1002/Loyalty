@@ -1,5 +1,5 @@
 import React from 'react';
-import {Easing, interpolate, useCurrentFrame} from 'remotion';
+import {Easing, interpolate, random, useCurrentFrame} from 'remotion';
 import '@fontsource/gantari/500.css';
 import '@fontsource/gantari/600.css';
 import '@fontsource/gantari/700.css';
@@ -33,7 +33,7 @@ export const keys = (f: number, ks: [number, number][], e = EXPO_IO) => {
   return ks[ks.length - 1][1];
 };
 
-/* ---------- Palabra: sube desde una máscara en el cuadro en que se dice ---------- */
+/* ---------- Palabra: sube desde una máscara con desenfoque y leve giro ---------- */
 export const Palabra: React.FC<{
   w: string;
   en: number;
@@ -43,41 +43,44 @@ export const Palabra: React.FC<{
   color?: string;
   colorAcento?: string;
   late?: boolean;
-}> = ({w, en, acento, resalte = true, sale, color, colorAcento = K.morado, late}) => {
+}> = ({w, en, acento, resalte = true, sale, color, colorAcento = K.morado}) => {
   const f = useCurrentFrame();
   const a = en - 3;
-  const t = t01(f, a, 12);
+  const t = t01(f, a, 16);
   const s = sale === undefined ? 0 : t01(f, sale, 12, Easing.bezier(0.7, 0, 0.84, 0));
-  const r = acento && resalte ? t01(f, a + 4, 14) : 0;
-  const pulso = late ? 1 + 0.08 * Math.sin(Math.min(1, Math.max(0, (f - a) / 14)) * Math.PI) : 1;
+  const r = acento && resalte ? t01(f, a + 8, 18) : 0;
   return (
-    <span style={{display: 'inline-block', position: 'relative', overflow: 'hidden', verticalAlign: 'bottom', padding: '0.06em 0.04em 0.12em', margin: '-0.06em -0.04em -0.12em'}}>
-      {r > 0 && (
-        <span
-          style={{
-            position: 'absolute',
-            left: '-0.04em',
-            right: '-0.04em',
-            top: '0.28em',
-            bottom: '0.08em',
-            background: 'rgba(137,29,255,0.16)',
-            borderRadius: '0.12em',
-            transformOrigin: 'left center',
-            transform: `scaleX(${r})`,
-          }}
-        />
-      )}
+    <span style={{display: 'inline-block', position: 'relative', overflow: 'hidden', verticalAlign: 'bottom', padding: '0.08em 0.06em 0.16em', margin: '-0.08em -0.06em -0.16em'}}>
       <span
         style={{
           display: 'inline-block',
           position: 'relative',
-          transform: `translateY(${(1 - t) * 110 - s * 110}%) scale(${pulso})`,
+          transformOrigin: '0% 100%',
+          transform: `translateY(${(1 - t) * 105 - s * 135}%) rotate(${(1 - t) * 5}deg)`,
+          filter: `blur(${(1 - t) * 6 + s * 6}px)`,
           color: acento ? colorAcento : color,
           fontWeight: acento ? 800 : undefined,
         }}
       >
         {w}
       </span>
+      {r > 0 && (
+        <span
+          style={{
+            position: 'absolute',
+            left: '0.06em',
+            right: '0.06em',
+            bottom: '0.1em',
+            height: '0.055em',
+            minHeight: 3,
+            borderRadius: 4,
+            background: colorAcento,
+            opacity: 0.85 * (1 - s),
+            transformOrigin: 'left center',
+            transform: `scaleX(${r})`,
+          }}
+        />
+      )}
     </span>
   );
 };
@@ -140,8 +143,8 @@ export const I = {
   bolsa: ['M5 8h14l-1 12H6L5 8z', 'M9 8a3 3 0 016 0'],
 };
 
-export const sombra = '0 24px 50px rgba(33,33,53,0.14)';
-export const sombraFuerte = '0 34px 80px rgba(0,0,0,0.35)';
+export const sombra = '0 1px 2px rgba(33,33,53,0.06), 0 8px 20px rgba(33,33,53,0.06), 0 30px 60px rgba(33,33,53,0.10)';
+export const sombraFuerte = '0 2px 4px rgba(0,0,0,0.2), 0 20px 40px rgba(0,0,0,0.25), 0 60px 120px rgba(0,0,0,0.35)';
 
 /* ---------- Cámara: centra el punto (cx, cy) del mundo con escala s ---------- */
 export const Camara: React.FC<{cx: number; cy: number; s: number; children: React.ReactNode}> = ({cx, cy, s, children}) => (
@@ -174,3 +177,89 @@ export const FondoCuadricula: React.FC<{bg?: string; color?: string}> = ({bg = K
 export const FondoAnillos: React.FC = () => (
   <div style={{position: 'absolute', inset: 0, background: K.niebla, backgroundImage: `repeating-radial-gradient(circle at 50% 52%, transparent 0 88px, rgba(255,255,255,0.75) 88px 91px)`}} />
 );
+
+/* ---------- Acabado: grano, viñeta, reflejo, bokeh, entrada 3D ---------- */
+export const Grano: React.FC<{opacidad?: number}> = ({opacidad = 0.06}) => {
+  const f = useCurrentFrame();
+  return (
+    <svg width={1080} height={1920} style={{position: 'absolute', inset: 0, opacity: opacidad, mixBlendMode: 'overlay', pointerEvents: 'none'}}>
+      <filter id="grano">
+        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves={2} seed={Math.floor(f / 2)} stitchTiles="stitch" />
+        <feColorMatrix type="saturate" values="0" />
+      </filter>
+      <rect width="100%" height="100%" filter="url(#grano)" />
+    </svg>
+  );
+};
+
+export const Vineta: React.FC<{fuerza?: number}> = ({fuerza = 0.1}) => (
+  <div style={{position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 85% 70% at 50% 48%, rgba(33,33,53,0) 55%, rgba(33,33,53,${fuerza}) 100%)`}} />
+);
+
+/** Banda de luz que cruza un elemento (poner dentro de un contenedor con overflow hidden y position relative). */
+export const Reflejo: React.FC<{en: number; dur?: number; fuerza?: number}> = ({en, dur = 26, fuerza = 0.55}) => {
+  const f = useCurrentFrame();
+  const t = interpolate(f, [en, en + dur], [-0.6, 1.6], {...CL, easing: EXPO_IO});
+  if (f < en || f > en + dur) return null;
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        inset: 0,
+        pointerEvents: 'none',
+        background: `linear-gradient(105deg, rgba(255,255,255,0) ${t * 100 - 18}%, rgba(255,255,255,${fuerza}) ${t * 100}%, rgba(255,255,255,0) ${t * 100 + 18}%)`,
+        mixBlendMode: 'soft-light',
+      }}
+    />
+  );
+};
+
+/** Círculos desenfocados que flotan en profundidad (bokeh) con parallax lento. */
+export const Bokeh: React.FC<{n?: number; color?: string; semilla?: string; opacidad?: number}> = ({n = 7, color = K.morado, semilla = 'b', opacidad = 0.16}) => {
+  const f = useCurrentFrame();
+  return (
+    <div style={{position: 'absolute', inset: 0, pointerEvents: 'none'}}>
+      {Array.from({length: n}).map((_, i) => {
+        const r = 160 + random(`${semilla}r${i}`) * 200;
+        const x = random(`${semilla}x${i}`) * 1080;
+        const y = random(`${semilla}y${i}`) * 1920 - f * (0.3 + r / 220);
+        return (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: x - r,
+              top: ((y % 2100) + 2100) % 2100 - 90 - r,
+              width: r * 2,
+              height: r * 2,
+              borderRadius: '50%',
+              background: color,
+              opacity: opacidad * (0.4 + random(`${semilla}o${i}`) * 0.6),
+              filter: `blur(${r * 0.6}px)`,
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+/** Entrada con profundidad: inclinación 3D + desenfoque + escala que se asienta. */
+export const Entra3D: React.FC<{en: number; children: React.ReactNode; rx?: number; ry?: number; dy?: number; style?: React.CSSProperties; dur?: number}> = ({en, children, rx = 18, ry = 0, dy = 80, style, dur = 24}) => {
+  const f = useCurrentFrame();
+  const t = t01(f, en, dur);
+  return (
+    <div style={{perspective: 1600, ...style}}>
+      <div
+        style={{
+          transform: `translateY(${(1 - t) * dy}px) rotateX(${(1 - t) * rx}deg) rotateY(${(1 - t) * ry}deg) scale(${0.94 + 0.06 * t})`,
+          opacity: Math.min(1, t * 1.6),
+          filter: `blur(${(1 - t) * 10}px)`,
+          transformOrigin: '50% 100%',
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+};
