@@ -59,6 +59,14 @@ export const E5: React.FC = () => {
           </svg>
         </div>
         <Abs x={N1.x - 160} y={N1.y + 130} style={{width: 320, textAlign: 'center', fontFamily: FONT, fontWeight: 700, fontSize: 46, color: K.tinta, opacity: nodo1 * textos}}>1.ª compra</Abs>
+        {/* Zoom Portal: anillos que giran alrededor de la segunda compra antes de entrar */}
+        {[0, 1, 2].map((i) => {
+          const t = t01(f, pSeg - 6 + i * 3, 18);
+          const r = 95 + 34 + i * 30;
+          return (
+            <div key={`p${i}`} style={{position: 'absolute', left: N2.x - r, top: N2.y - r, width: r * 2, height: r * 2, borderRadius: '50%', border: `${5 - i}px ${i === 1 ? 'dashed' : 'solid'} ${K.morado}`, opacity: t * (0.75 - i * 0.2) * (1 - t01(f, zoom + 6, 10)), transform: `scale(${0.6 + 0.4 * t}) rotate(${(f - pSeg) * (i % 2 ? -4 : 3)}deg)`, boxShadow: i === 0 ? `0 0 ${40 * t}px rgba(137,29,255,0.45)` : undefined}} />
+          );
+        })}
         <div style={{position: 'absolute', left: N2.x - 95, top: N2.y - 95, width: 190, height: 190, borderRadius: 95, background: K.blanco, border: `6px dashed ${K.morado}`, boxSizing: 'border-box', transform: `scale(${nodo2 * pulso})`, opacity: 1 - t01(f, zoom + 8, 12), display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
           <span style={{fontFamily: FONT, fontWeight: 800, fontSize: 110, color: K.morado, opacity: textos}}>?</span>
         </div>

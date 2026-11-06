@@ -8,6 +8,76 @@ const k = 2;
 
 const TICKETS = ['Tacos al pastor ×3', 'Café americano', 'Hamburguesa doble', 'Helado de vainilla', 'Pizza familiar', 'Agua de horchata', 'Ramen tonkotsu'];
 
+/** El celular (posición y animación dependen solo del cuadro). */
+const Telefono: React.FC = () => {
+  const f = useCurrentFrame();
+  const pPero = P(k, 'Pero si');
+  const pA = P(k, 'a quién');
+  const tel = keys(f, [[pPero - 4, 1500], [pPero + 22, 0]]);
+  return (
+    <>
+      <div style={{position: 'absolute', left: 140, top: 600, width: 800, height: 900, borderRadius: '50%', background: K.morado, opacity: 0.35 * t01(f, pPero + 10, 30), filter: 'blur(120px)'}} />
+      <div style={{position: 'absolute', left: 120, top: 520, transform: `perspective(2200px) translateY(${tel}px) rotateX(${(tel / 1500) * 38}deg) rotateZ(${(tel / 1500) * -6}deg)`, transformOrigin: '50% 0%'}}>
+        <div style={{width: 840, height: 1560, borderRadius: 90, background: K.tinta, padding: 20, boxSizing: 'border-box', boxShadow: sombraFuerte}}>
+          <div style={{width: '100%', height: '100%', borderRadius: 72, background: K.blanco, overflow: 'hidden', fontFamily: FONT, position: 'relative', padding: '110px 50px 0', boxSizing: 'border-box'}}>
+            <div style={{position: 'absolute', top: 30, left: '50%', width: 200, height: 46, marginLeft: -100, borderRadius: 23, background: K.tinta}} />
+            <Reflejo en={pPero + 14} dur={34} fuerza={0.7} />
+            <div style={{fontSize: 52, fontWeight: 800, color: K.tinta}}>Nuevo mensaje</div>
+            <div style={{marginTop: 30, borderRadius: 26, background: K.niebla, padding: '26px 30px', minHeight: 150}}>
+              <div style={{fontSize: 34, fontWeight: 700, color: K.suave, marginBottom: 6}}>Para:</div>
+              <div style={{display: 'flex', alignItems: 'flex-end'}}>
+                <Frase k={k} desde="a quién" n={4} acentos={['escribirías?']} style={{fontSize: 58, fontWeight: 800, color: K.tinta, lineHeight: 1.05}} />
+                <div style={{width: 5, height: 58, marginLeft: 8, marginBottom: 8, background: K.morado, opacity: Math.floor(f / 8) % 2 ? 1 : 0.15}} />
+              </div>
+            </div>
+            {[0, 1, 2].map((i) => (
+              <div key={i} style={{display: 'flex', alignItems: 'center', gap: 22, marginTop: 26, opacity: t01(f, pA + 10 + i * 4, 12)}}>
+                <div style={{width: 84, height: 84, borderRadius: 42, border: `4px dashed ${K.tenue}`, boxSizing: 'border-box'}} />
+                <div style={{flex: 1}}>
+                  <div style={{width: 300 - i * 40, height: 24, borderRadius: 12, background: K.niebla}} />
+                  <div style={{width: 200, height: 20, borderRadius: 10, background: K.niebla, marginTop: 12}} />
+                </div>
+                <div style={{fontSize: 30, fontWeight: 700, color: K.tenue}}>sin contacto</div>
+              </div>
+            ))}
+            <div style={{position: 'absolute', left: 50, right: 50, bottom: 340, borderRadius: 30, background: K.morado, color: K.blanco, padding: '32px 36px', fontSize: 40, fontWeight: 600, lineHeight: 1.25}}>
+              ¡Te extrañamos! Esta semana tu postre va por nuestra cuenta.
+            </div>
+            <div style={{position: 'absolute', left: 50, right: 50, bottom: 200, borderRadius: 999, background: K.niebla, color: K.tenue, padding: '30px 0', fontSize: 40, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16}}>
+              <Ico d={I.enviar} size={42} color={K.tenue} /> Enviar
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+/** Lupa de vidrio líquido: aumenta y deforma lo que pasa debajo. */
+const Lupa: React.FC = () => {
+  const f = useCurrentFrame();
+  const pA = P(k, 'a quién');
+  const R = 170;
+  const t = t01(f, pA + 10, 16);
+  const cx = keys(f, [[pA + 10, 300], [pA + 70, 780]]);
+  const cy = 1130 + Math.sin((f - pA) / 9) * 60;
+  return (
+    <div style={{position: 'absolute', left: cx - R, top: cy - R, width: R * 2, height: R * 2, borderRadius: '50%', overflow: 'hidden', transform: `scale(${t})`, boxShadow: '0 30px 60px rgba(0,0,0,0.45), inset 0 0 0 2px rgba(255,255,255,0.8)'}}>
+      <svg width={0} height={0} style={{position: 'absolute'}}>
+        <filter id="lupaD">
+          <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves={2} seed={Math.floor(f / 3)} />
+          <feDisplacementMap in="SourceGraphic" scale={26} xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
+      <div style={{position: 'absolute', left: R - cx, top: R - cy, width: 1080, height: 1920, transform: 'scale(1.55)', transformOrigin: `${cx}px ${cy}px`, filter: 'url(#lupaD)'}}>
+        <Telefono />
+      </div>
+      <div style={{position: 'absolute', inset: 0, borderRadius: '50%', boxShadow: 'inset 10px 0 24px rgba(137,29,255,0.5), inset -10px 0 24px rgba(255,255,255,0.7), inset 0 -30px 50px rgba(33,33,53,0.25)'}} />
+      <div style={{position: 'absolute', left: R * 0.3, top: R * 0.16, width: R * 0.95, height: R * 0.42, borderRadius: '50%', background: 'linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0))', transform: 'rotate(-20deg)'}} />
+    </div>
+  );
+};
+
 export const E3: React.FC = () => {
   const f = useCurrentFrame();
   const pPero = P(k, 'Pero si');
@@ -57,39 +127,9 @@ export const E3: React.FC = () => {
       </Abs>
 
       {/* Celular: nuevo mensaje sin destinatarios */}
-      <div style={{position: 'absolute', left: 140, top: 600, width: 800, height: 900, borderRadius: '50%', background: K.morado, opacity: 0.35 * t01(f, pPero + 10, 30), filter: 'blur(120px)'}} />
-      <div style={{position: 'absolute', left: 120, top: 520, transform: `perspective(2200px) translateY(${tel}px) rotateX(${(tel / 1500) * 38}deg) rotateZ(${(tel / 1500) * -6}deg)`, transformOrigin: '50% 0%'}}>
-        <div style={{width: 840, height: 1560, borderRadius: 90, background: K.tinta, padding: 20, boxSizing: 'border-box', boxShadow: sombraFuerte}}>
-          <div style={{width: '100%', height: '100%', borderRadius: 72, background: K.blanco, overflow: 'hidden', fontFamily: FONT, position: 'relative', padding: '110px 50px 0', boxSizing: 'border-box'}}>
-            <div style={{position: 'absolute', top: 30, left: '50%', width: 200, height: 46, marginLeft: -100, borderRadius: 23, background: K.tinta}} />
-            <Reflejo en={pPero + 14} dur={34} fuerza={0.7} />
-            <div style={{fontSize: 52, fontWeight: 800, color: K.tinta}}>Nuevo mensaje</div>
-            <div style={{marginTop: 30, borderRadius: 26, background: K.niebla, padding: '26px 30px', minHeight: 150}}>
-              <div style={{fontSize: 34, fontWeight: 700, color: K.suave, marginBottom: 6}}>Para:</div>
-              <div style={{display: 'flex', alignItems: 'flex-end'}}>
-                <Frase k={k} desde="a quién" n={4} acentos={['escribirías?']} style={{fontSize: 58, fontWeight: 800, color: K.tinta, lineHeight: 1.05}} />
-                <div style={{width: 5, height: 58, marginLeft: 8, marginBottom: 8, background: K.morado, opacity: Math.floor(f / 8) % 2 ? 1 : 0.15}} />
-              </div>
-            </div>
-            {[0, 1, 2].map((i) => (
-              <div key={i} style={{display: 'flex', alignItems: 'center', gap: 22, marginTop: 26, opacity: t01(f, pA + 10 + i * 4, 12)}}>
-                <div style={{width: 84, height: 84, borderRadius: 42, border: `4px dashed ${K.tenue}`, boxSizing: 'border-box'}} />
-                <div style={{flex: 1}}>
-                  <div style={{width: 300 - i * 40, height: 24, borderRadius: 12, background: K.niebla}} />
-                  <div style={{width: 200, height: 20, borderRadius: 10, background: K.niebla, marginTop: 12}} />
-                </div>
-                <div style={{fontSize: 30, fontWeight: 700, color: K.tenue}}>sin contacto</div>
-              </div>
-            ))}
-            <div style={{position: 'absolute', left: 50, right: 50, bottom: 340, borderRadius: 30, background: K.morado, color: K.blanco, padding: '32px 36px', fontSize: 40, fontWeight: 600, lineHeight: 1.25}}>
-              ¡Te extrañamos! Esta semana tu postre va por nuestra cuenta.
-            </div>
-            <div style={{position: 'absolute', left: 50, right: 50, bottom: 200, borderRadius: 999, background: K.niebla, color: K.tenue, padding: '30px 0', fontSize: 40, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16}}>
-              <Ico d={I.enviar} size={42} color={K.tenue} /> Enviar
-            </div>
-          </div>
-        </div>
-      </div>
+      <Telefono />
+      {/* Liquid Glass: una lupa de vidrio recorre los contactos vacíos */}
+      {f >= pA + 10 && <Lupa />}
     </AbsoluteFill>
   );
 };

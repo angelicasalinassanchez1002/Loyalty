@@ -1,30 +1,28 @@
 import React from 'react';
-import {AbsoluteFill, random, useCurrentFrame} from 'remotion';
-import {Abs, Bokeh, FondoAnillos, Frase, I, Ico, K, keys, sombra, t01} from '../kit';
+import {AbsoluteFill, Freeze, random, useCurrentFrame} from 'remotion';
+import {Abs, Bokeh, FondoAnillos, Frase, I, Ico, K, Romper, keys, sombra, t01} from '../kit';
 import {P} from '../tiempos';
 
 // «Tal vez no necesitas empezar por atraer más clientes. Necesitas dejar de perder el contacto con los que ya tienes.»
+// Efecto Frame Break: tras tachar «atraer más clientes», la pantalla se estrella y debajo aparece la red de clientes.
 const k = 3;
 const CX = 540;
 const CY = 1010;
 const N = 8;
 const R = 300;
 
-export const E4: React.FC = () => {
+const tiempos = () => ({pAtraer: P(k, 'atraer más'), pNec: P(k, 'Necesitas dejar'), pPerder: P(k, 'perder el'), pCon: P(k, 'con los')});
+
+/** Capa A: llegan clientes nuevos y se tacha «atraer más clientes». Es la que se estrella. */
+const CapaA: React.FC = () => {
   const f = useCurrentFrame();
-  const pAtraer = P(k, 'atraer más');
-  const pNec = P(k, 'Necesitas dejar');
-  const pPerder = P(k, 'perder el');
-  const pCon = P(k, 'con los');
-
+  const {pAtraer, pNec} = tiempos();
   const tacha = t01(f, pNec - 2, 14);
-  const cam = keys(f, [[0, 1.08], [pNec, 1.08], [pNec + 24, 1]]);
-
   return (
     <AbsoluteFill>
       <FondoAnillos />
       <Bokeh semilla="e4" n={4} opacidad={0.05} />
-      <div style={{position: 'absolute', inset: 0, transform: `scale(${cam})`, transformOrigin: `${CX}px ${CY}px`}}>
+      <div style={{position: 'absolute', inset: 0, transform: 'scale(1.08)', transformOrigin: `${CX}px ${CY}px`}}>
         {/* Clientes nuevos que llegan desde fuera (se detienen al tacharse) */}
         {Array.from({length: 22}).map((_, i) => {
           const a = pAtraer - 14 + i * 2;
@@ -32,12 +30,39 @@ export const E4: React.FC = () => {
           const d0 = 900 + random(`d${i}`) * 300;
           const viaje = t01(f, a, 30);
           const d = d0 * (1 - viaje) + 190 * viaje;
-          const op = t01(f, a, 8) * (1 - t01(f, pNec, 10));
+          const op = t01(f, a, 8);
           return (
             <div key={i} style={{position: 'absolute', left: CX + Math.cos(ang) * d - 24, top: CY + Math.sin(ang) * d - 24, width: 48, height: 48, borderRadius: 24, border: `4px solid ${K.morado}`, background: K.blanco, opacity: op * 0.9, boxSizing: 'border-box'}} />
           );
         })}
+        {/* El negocio al centro */}
+        <div style={{position: 'absolute', left: CX - 140, top: CY - 140, width: 280, height: 280, borderRadius: 140, background: K.morado, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 0 22px rgba(137,29,255,0.12), 0 30px 70px rgba(137,29,255,0.35)', transform: `scale(${t01(f, 0, 18)})`}}>
+          <Ico d={I.tienda} size={150} color={K.blanco} w={1.6} />
+        </div>
+      </div>
+      {/* Texto 1 (arriba) con tachado */}
+      <Abs x={90} y={190}>
+        <Frase k={k} desde="Tal vez" n={6} saltos={[3]} style={{fontSize: 70, fontWeight: 700, color: K.suave, lineHeight: 1.08}} />
+      </Abs>
+      <Abs x={90} y={360}>
+        <div style={{position: 'relative', display: 'inline-block'}}>
+          <Frase k={k} desde="atraer más" n={3} acentos={['atraer', 'más', 'clientes.']} resalte={false} style={{fontSize: 104, fontWeight: 800, letterSpacing: '-0.02em'}} />
+          <div style={{position: 'absolute', left: -10, right: -10, top: '52%', height: 12, borderRadius: 6, background: K.tinta, transformOrigin: 'left center', transform: `scaleX(${tacha})`}} />
+        </div>
+      </Abs>
+    </AbsoluteFill>
+  );
+};
 
+/** Capa B: la red de clientes actuales que pierde y recupera el contacto. */
+const CapaB: React.FC = () => {
+  const f = useCurrentFrame();
+  const {pNec, pPerder, pCon} = tiempos();
+  const cam = keys(f, [[0, 1.12], [pNec + 14, 1.12], [pNec + 40, 1]]);
+  return (
+    <AbsoluteFill>
+      <FondoAnillos claro />
+      <div style={{position: 'absolute', inset: 0, transform: `scale(${cam})`, transformOrigin: `${CX}px ${CY}px`}}>
         {/* Red de clientes actuales */}
         <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
           <defs>
@@ -48,7 +73,7 @@ export const E4: React.FC = () => {
           </defs>
           {Array.from({length: N}).map((_, i) => {
             const ang = ((i / N) * 360 - 90) * (Math.PI / 180);
-            const nace = t01(f, pNec + 4 + i * 2, 16);
+            const nace = t01(f, pNec + 20 + i * 2, 16);
             const corte = t01(f, pPerder + 2 + i * 3, 14);
             const x = CX + Math.cos(ang) * R;
             const y = CY + Math.sin(ang) * R;
@@ -71,7 +96,7 @@ export const E4: React.FC = () => {
         </svg>
         {Array.from({length: N}).map((_, i) => {
           const ang = ((i / N) * 360 - 90) * (Math.PI / 180);
-          const nace = t01(f, pNec + 8 + i * 2, 16);
+          const nace = t01(f, pNec + 24 + i * 2, 16);
           const corte = t01(f, pPerder + 2 + i * 3, 14);
           const vuelve = t01(f, pCon + 4 + i * 2, 14);
           const x = CX + Math.cos(ang) * (R + 40 * corte * (1 - vuelve));
@@ -115,22 +140,31 @@ export const E4: React.FC = () => {
           <Ico d={I.tienda} size={150} color={K.blanco} w={1.6} />
         </div>
       </div>
-
-      {/* Texto 1 (arriba) con tachado */}
-      <Abs x={90} y={190}>
-        <Frase k={k} desde="Tal vez" n={6} saltos={[3]} sale={pNec + 16} style={{fontSize: 70, fontWeight: 700, color: K.suave, lineHeight: 1.08}} />
-      </Abs>
-      <Abs x={90} y={360}>
-        <div style={{position: 'relative', display: 'inline-block'}}>
-          <Frase k={k} desde="atraer más" n={3} acentos={['atraer', 'más', 'clientes.']} resalte={false} sale={pNec + 16} style={{fontSize: 104, fontWeight: 800, letterSpacing: '-0.02em'}} />
-          <div style={{position: 'absolute', left: -10, right: -10, top: '52%', height: 12, borderRadius: 6, background: K.tinta, transformOrigin: 'left center', transform: `scaleX(${tacha})`, opacity: 1 - t01(f, pNec + 16, 10)}} />
-        </div>
-      </Abs>
-
       {/* Texto 2 (abajo) */}
       <Abs x={90} y={1430}>
         <Frase k={k} desde="Necesitas dejar" n={10} acentos={['perder', 'el', 'contacto']} saltos={[3, 6]} style={{fontSize: 88, fontWeight: 800, color: K.tinta, lineHeight: 1.06, letterSpacing: '-0.02em'}} />
       </Abs>
+    </AbsoluteFill>
+  );
+};
+
+export const E4: React.FC = () => {
+  const f = useCurrentFrame();
+  const {pNec} = tiempos();
+  const grieta = pNec + 12;
+  const cae = pNec + 18;
+  return (
+    <AbsoluteFill>
+      <CapaB />
+      <Romper impacto={{x: CX, y: 430}} grieta={grieta} cae={cae}>
+        {f >= grieta ? (
+          <Freeze frame={grieta}>
+            <CapaA />
+          </Freeze>
+        ) : (
+          <CapaA />
+        )}
+      </Romper>
     </AbsoluteFill>
   );
 };

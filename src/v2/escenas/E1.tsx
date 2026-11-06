@@ -16,21 +16,26 @@ export const E1: React.FC = () => {
   const pTe = P(k, 'Te compró.');
 
   // Cámara: empieza dentro del ticket y se aleja para revelar el café.
-  const s = keys(f, [[0, 2.15], [pY - 6, 2.0], [pY + 16, 1]]);
-  const cx = keys(f, [[0, 440], [pY - 6, 440], [pY + 16, 540]]);
-  const cy = keys(f, [[0, 850], [pY - 6, 860], [pY + 16, 1010]]);
+  // Snap Zoom: cuando la puerta se cierra, zoom seco hacia ella.
+  const snap = pNunca + 20;
+  const camS = (q: number) => keys(q, [[0, 2.15], [pY - 6, 2.0], [pY + 16, 1], [snap, 1], [snap + 4, 1.8]]);
+  const s = camS(f);
+  const cx = keys(f, [[0, 440], [pY - 6, 440], [pY + 16, 540], [snap, 540], [snap + 4, 790]]);
+  const cy = keys(f, [[0, 850], [pY - 6, 860], [pY + 16, 1010], [snap, 1010], [snap + 4, 1090]]);
+  const blurSnap = f >= snap && f <= snap + 5 ? Math.min(16, Math.abs(camS(f) - camS(f - 1)) * 40) : 0;
 
   const impreso = t01(f, 0, 22); // el ticket sale de la impresora
   const fachada = t01(f, pY - 4, 18);
   const sale = t01(f, pNunca, 34); // el cliente recorre la ruta
   const ruta = t01(f, pNunca - 4, 30);
-  const puerta = t01(f, pNunca + 22, 10); // la puerta se cierra
+  const puerta = t01(f, pNunca + 12, 9); // la puerta se cierra
   const check = t01(f, pTe + 2, 12);
 
   return (
     <AbsoluteFill>
       <FondoPuntos />
       <Bokeh semilla="e1" n={4} opacidad={0.05} />
+      <div style={{position: 'absolute', inset: 0, filter: blurSnap ? `blur(${blurSnap}px)` : undefined}}>
       <Camara cx={cx} cy={cy} s={s}>
         {/* Fachada del café */}
         <div style={{opacity: fachada}}>
@@ -146,6 +151,8 @@ export const E1: React.FC = () => {
           </div>
         )}
       </Camara>
+      </div>
+      <div style={{position: 'absolute', inset: 0, background: K.blanco, opacity: f === snap + 1 ? 0.3 : 0, pointerEvents: 'none'}} />
 
       {/* «Y nunca volvió.» en pantalla, abajo a la izquierda junto a la ruta */}
       <Abs x={100} y={1420}>

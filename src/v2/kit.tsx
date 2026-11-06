@@ -174,8 +174,8 @@ export const FondoDiagonales: React.FC = () => (
 export const FondoCuadricula: React.FC<{bg?: string; color?: string}> = ({bg = K.tinta, color = 'rgba(255,255,255,0.05)'}) => (
   <div style={{position: 'absolute', inset: 0, background: bg, backgroundImage: `linear-gradient(${color} 2px, transparent 2px), linear-gradient(90deg, ${color} 2px, transparent 2px)`, backgroundSize: '90px 90px', backgroundPosition: '0 0'}} />
 );
-export const FondoAnillos: React.FC = () => (
-  <div style={{position: 'absolute', inset: 0, background: K.niebla, backgroundImage: `repeating-radial-gradient(circle at 50% 52%, transparent 0 88px, rgba(255,255,255,0.75) 88px 91px)`}} />
+export const FondoAnillos: React.FC<{claro?: boolean}> = ({claro}) => (
+  <div style={{position: 'absolute', inset: 0, background: claro ? K.blanco : K.niebla, backgroundImage: `repeating-radial-gradient(circle at 50% 52%, transparent 0 88px, ${claro ? K.niebla : 'rgba(255,255,255,0.75)'} 88px 91px)`}} />
 );
 
 /* ---------- Acabado: grano, viñeta, reflejo, bokeh, entrada 3D ---------- */
@@ -260,6 +260,53 @@ export const Entra3D: React.FC<{en: number; children: React.ReactNode; rx?: numb
       >
         {children}
       </div>
+    </div>
+  );
+};
+
+/* ---------- Romper: estrella el contenido como vidrio y deja caer los pedazos ---------- */
+export const Romper: React.FC<{impacto: {x: number; y: number}; grieta: number; cae: number; children: React.ReactNode; rayos?: number}> = ({impacto, grieta, cae, children, rayos = 11}) => {
+  const f = useCurrentFrame();
+  const anillos = [0, 220, 540, 2400];
+  const angs = Array.from({length: rayos}, (_, i) => (i / rayos) * Math.PI * 2 + (random(`ra${i}`) - 0.5) * 0.35);
+  const frs: {pts: [number, number][]; c: [number, number]; k: number}[] = [];
+  for (let r = 0; r < anillos.length - 1; r++) {
+    for (let i = 0; i < rayos; i++) {
+      const a1 = angs[i];
+      const a2 = angs[(i + 1) % rayos] + (i === rayos - 1 ? Math.PI * 2 : 0);
+      const r1 = anillos[r] * (0.85 + random(`r1${r}${i}`) * 0.3);
+      const r2 = anillos[r + 1] * (0.85 + random(`r2${r}${i}`) * 0.3);
+      const P = (a: number, rr: number): [number, number] => [impacto.x + Math.cos(a) * rr, impacto.y + Math.sin(a) * rr];
+      const pts: [number, number][] = r === 0 ? [P(a1, 0), P(a1, r2), P(a2, r2)] : [P(a1, r1), P(a1, r2), P(a2, r2), P(a2, r1)];
+      frs.push({pts, c: [pts.reduce((s, p) => s + p[0], 0) / pts.length, pts.reduce((s, p) => s + p[1], 0) / pts.length], k: r * rayos + i});
+    }
+  }
+  if (f < grieta) return <div style={{position: 'absolute', inset: 0}}>{children}</div>;
+  const g = t01(f, grieta, 5);
+  return (
+    <div style={{position: 'absolute', inset: 0}}>
+      {frs.map((fr) => {
+        const dt = Math.max(0, f - cae - random(`d${fr.k}`) * 8);
+        const dx = ((fr.c[0] - impacto.x) * 0.012 + (random(`vx${fr.k}`) - 0.5) * 4) * dt;
+        const dy = 1.6 * dt * dt + (fr.c[1] - impacto.y) * 0.006 * dt;
+        const rot = (random(`rt${fr.k}`) - 0.5) * 2.4 * dt;
+        const desp = (1 - Math.min(1, dt / 4)) * 0 + g * 3;
+        return (
+          <div key={fr.k} style={{position: 'absolute', inset: 0, transform: `translate(${dx + (fr.c[0] - impacto.x) * 0.004 * desp}px, ${dy + (fr.c[1] - impacto.y) * 0.004 * desp}px) rotate(${rot}deg)`, transformOrigin: `${fr.c[0]}px ${fr.c[1]}px`, opacity: dy > 2200 ? 0 : 1, filter: dt > 0 ? 'drop-shadow(0 18px 22px rgba(33,33,53,0.28))' : undefined}}>
+            <div style={{position: 'absolute', inset: 0, clipPath: `polygon(${fr.pts.map((p) => `${p[0]}px ${p[1]}px`).join(',')})`}}>
+              {children}
+              <div style={{position: 'absolute', inset: 0, background: `linear-gradient(${random(`g${fr.k}`) * 360}deg, rgba(255,255,255,0.35), rgba(255,255,255,0))`, opacity: g}} />
+            </div>
+          </div>
+        );
+      })}
+      {f < cae + 3 && (
+        <svg width={1080} height={1920} style={{position: 'absolute', inset: 0, opacity: g}}>
+          {frs.map((fr) => (
+            <polygon key={fr.k} points={fr.pts.map((p) => p.join(',')).join(' ')} fill="none" stroke={K.blanco} strokeWidth={3} />
+          ))}
+        </svg>
+      )}
     </div>
   );
 };

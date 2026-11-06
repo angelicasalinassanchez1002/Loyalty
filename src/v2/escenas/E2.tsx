@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
-import {Abs, Bokeh, Camara, Entra3D, FONT, FondoDiagonales, Frase, I, Ico, K, Reflejo, keys, sombra, t01} from '../kit';
+import {Abs, Bokeh, Camara, EXPO, Entra3D, FONT, FondoDiagonales, Frase, I, Ico, K, Reflejo, keys, sombra, t01} from '../kit';
 import {P} from '../tiempos';
 
 // «Y mientras sigues buscando clientes nuevos, los que ya te compraron se van sin que sepas quiénes son.»
@@ -54,13 +54,23 @@ export const E2: React.FC = () => {
           </div>
           </div>
         </Abs>
-        <Abs x={90} y={620}>
-          <div style={{width: 900}}>
-            <Anuncio en={pBusc + 6} titulo="2x1 en tacos al pastor" dato="Anuncio · 12.4 k personas" />
-            <Anuncio en={pBusc + 12} titulo="Promo de martes" dato="Anuncio · clientes nuevos" />
-            <Anuncio en={pBusc + 18} titulo="Cupón de bienvenida" dato="Anuncio · redes sociales" />
-          </div>
-        </Abs>
+        {/* Headline Storm: promociones que entran de golpe mientras se buscan clientes nuevos */}
+        {[
+          {t: '2x1 EN TACOS AL PASTOR', bg: K.morado, c: K.blanco, rot: -8, y: 640, desde: -1, en: pBusc + 4},
+          {t: 'PROMO DE MARTES', bg: K.blanco, c: K.tinta, rot: 6, y: 830, desde: 1, en: pBusc + 10},
+          {t: 'CUPÓN DE BIENVENIDA', bg: K.tinta, c: K.blanco, rot: -4, y: 1010, desde: -1, en: pBusc + 16},
+          {t: 'CLIENTES NUEVOS', bg: K.morado, c: K.blanco, rot: 9, y: 1180, desde: 1, en: pBusc + 22},
+        ].map((c) => {
+          const p = t01(f, c.en, 9, EXPO);
+          const des = Math.max(0, f - c.en) * 3;
+          return (
+            <div key={c.t} style={{position: 'absolute', left: -300, top: c.y, width: 1680, height: 140, background: c.bg, transform: `rotate(${c.rot}deg) translateX(${(1 - p) * c.desde * 1900 - des * c.desde}px)`, display: 'flex', alignItems: 'center', boxShadow: '0 24px 50px rgba(33,33,53,0.28)', overflow: 'hidden', filter: `blur(${(1 - p) * 10}px)`}}>
+              <div style={{whiteSpace: 'nowrap', fontFamily: FONT, fontWeight: 800, fontSize: 84, color: c.c, letterSpacing: '-0.01em', paddingLeft: 330}}>
+                {c.t} · {c.t} · {c.t}
+              </div>
+            </div>
+          );
+        })}
 
         {/* Parte 2: los que ya te compraron */}
         <Abs x={90} y={1600}>
