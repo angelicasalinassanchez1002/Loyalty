@@ -21,11 +21,6 @@ export const E3: React.FC = () => {
       <Bokeh semilla="e3" n={4} opacidad={0.1} />
       <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: 900, background: 'radial-gradient(ellipse 70% 60% at 50% 100%, rgba(137,29,255,0.35), rgba(137,29,255,0))'}} />
 
-      {/* Título 1 */}
-      <Abs x={90} y={230}>
-        <Frase k={k} desde="Ya conocen" n={8} acentos={['confiaron']} resalte={false} saltos={[4]} sale={pPero - 4} style={{fontSize: 78, fontWeight: 700, color: K.blanco, lineHeight: 1.08}} />
-      </Abs>
-
       {/* Pila de tickets que caen */}
       <div style={{position: 'absolute', inset: 0, opacity: 1 - salePila, transform: `translateY(${salePila * 300}px) scale(${1 - salePila * 0.15})`}}>
         {TICKETS.map((t, i) => {
@@ -50,6 +45,11 @@ export const E3: React.FC = () => {
           );
         })}
       </div>
+
+      {/* Título 1 */}
+      <Abs x={90} y={230}>
+        <Frase k={k} desde="Ya conocen" n={8} acentos={['confiaron']} resalte={false} saltos={[4]} sale={pPero - 14} style={{fontSize: 78, fontWeight: 700, color: K.blanco, lineHeight: 1.08}} />
+      </Abs>
 
       {/* Título 2 */}
       <Abs x={90} y={190}>
