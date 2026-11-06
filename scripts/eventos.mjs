@@ -14,6 +14,11 @@ const ev = {
   imprime: [0.0],
   riser: [zoom5 - 1.2],
   final: [titulo + 0.2],
+  snap: [A(0, 'nunca', 20)],
+  golpe: [4, 10, 16, 22].map((d) => A(1, 'buscando', d)),
+  vidrio: [A(3, 'Necesitas dejar', 12)],
+  lupa: [A(2, 'a quién', 10)],
+  portal: [A(4, 'una segunda?', -8)],
   voz: VOZ.map((v) => [v.s, v.e]),
 };
 writeFileSync('scripts/eventos.json', JSON.stringify(ev, null, 1));

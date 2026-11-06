@@ -127,6 +127,32 @@ def riser(d=1.2):
     tono = np.sin(2 * np.pi * np.cumsum(200 + 700 * k ** 2) / SR) * 0.25
     return (y * 2.5 + tono) * k ** 2
 
+def golpe():
+    d = t(0.35)
+    f = 90 * np.exp(-d * 10) + 40
+    return np.sin(2 * np.pi * np.cumsum(f) / SR) * env(len(d), 0.002, 0.12) * 1.2 + lp(rng.standard_normal(len(d)), 0.6) * env(len(d), 0.001, 0.03) * 0.6
+
+def vidrio():
+    out = np.zeros(int(SR * 1.4))
+    for i in range(70):
+        d = t(0.25)
+        fr = 2500 + rng.random() * 6000
+        b = np.sin(2 * np.pi * fr * d) * env(len(d), 0.0005, 0.02 + rng.random() * 0.06)
+        st = int(SR * (rng.random() ** 2) * 0.9)
+        out[st:st + len(b)] += b * (0.3 + rng.random() * 0.5)
+    n = rng.standard_normal(len(out)) * np.exp(-np.arange(len(out)) / (SR * 0.15))
+    g = golpe()
+    return out * 0.35 + n * 0.5 + np.pad(g, (0, len(out) - len(g))) * 0.8
+
+def swell(d=1.6):
+    dd = t(d); k = dd / d
+    return (np.sin(2 * np.pi * 520 * dd) + np.sin(2 * np.pi * 523 * dd) * 0.8) * np.sin(np.pi * k) ** 2 * 0.3
+
+for s in ev.get('snap', []): add(sfx, golpe(), s, 0.4); add(sfx, click(), s, 0.35)
+for s in ev.get('golpe', []): add(sfx, golpe(), s, 0.38)
+for s in ev.get('vidrio', []): add(sfx, vidrio(), s, 0.5)
+for s in ev.get('lupa', []): add(sfx, swell(), s, 0.12)
+for s in ev.get('portal', []): add(sfx, riser(0.8), s, 0.2)
 for s in ev['whoosh']: add(sfx, whoosh(), s - 0.2, 0.32)
 for s in ev['tick']: add(sfx, tick(), s, 0.22)
 for s in ev['click']: add(sfx, click(), s, 0.3)
